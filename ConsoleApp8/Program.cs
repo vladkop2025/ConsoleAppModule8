@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -270,6 +271,9 @@ namespace ConsoleApp8
                 // Получаем все папки в корневой директории
                 var folders = root.GetDirectories();
 
+                // Выводим информацию о файлах в корневой директории
+                WriteFileInfo(root);
+
                 // Выводим информацию о папках
                 WriteFolderInfo(folders);
 
@@ -282,7 +286,7 @@ namespace ConsoleApp8
         public static void WriteDriveInfo(DriveInfo drive)
         {
             Console.WriteLine($"Название: {drive.Name}");
-            Console.WriteLine($"Тие: {drive.DriveType}");
+            Console.WriteLine($"Тип: {drive.DriveType}");
             if (drive.IsReady)
             {
                 Console.WriteLine($"Объем: {drive.TotalSize}");
@@ -300,10 +304,29 @@ namespace ConsoleApp8
 
             foreach (var folder in folders)
             {
-                Console.WriteLine(folder.Name + DirectoryExtention.DirSize(folder));
-                Console.WriteLine($"Размер директории: {FormatSize(DirectoryExtention.DirSize(folder))}");
+                try
+                {
+                    Console.WriteLine(folder.Name + $" - {DirectoryExtention.DirSize(folder)} байт");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(folder.Name + $" - Не удалось рассчитать размер: {e.Message}");
+                }
             }
         }
+
+        public static void WriteFileInfo(DirectoryInfo rootfolder)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Файлы: ");
+            Console.WriteLine();
+
+            foreach (var file in rootfolder.GetFiles())
+            {
+                Console.WriteLine(file.Name + $" - {file.Length} байт");
+            }
+        }
+
 
         static void GetCatalogs()
         {
@@ -325,18 +348,18 @@ namespace ConsoleApp8
             }
         }
 
-        //Преобразование размера в более читаемый формат (например, КБ, МБ, ГБ):
-        static string FormatSize(long bytes)
-        {
-            string[] sizes = { "B", "KB", "MB", "GB", "TB" };
-            int order = 0;
-            while (bytes >= 1024 && order < sizes.Length - 1)
-            {
-                order++;
-                bytes /= 1024;
-            }
-            return $"{bytes:0.##} {sizes[order]}";
-        }
+        ////Преобразование размера в более читаемый формат (например, КБ, МБ, ГБ):
+        //static string FormatSize(long bytes)
+        //{
+        //    string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+        //    int order = 0;
+        //    while (bytes >= 1024 && order < sizes.Length - 1)
+        //    {
+        //        order++;
+        //        bytes /= 1024;
+        //    }
+        //    return $"{bytes:0.##} {sizes[order]}";
+        //}
 
     }
 }
