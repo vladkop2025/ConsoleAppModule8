@@ -255,7 +255,89 @@ namespace ConsoleApp8
 
             */
 
+            // Получаем все диски
+            DriveInfo[] drives = DriveInfo.GetDrives();
+
+            // Фильтруем диски (только фиксированные)
+            foreach (var drive in drives.Where(d => d.DriveType == DriveType.Fixed))
+            {
+                // Выводим информацию о диске
+                WriteDriveInfo(drive);
+
+                // Получаем корневую директорию диска
+                DirectoryInfo root = drive.RootDirectory;
+
+                // Получаем все папки в корневой директории
+                var folders = root.GetDirectories();
+
+                // Выводим информацию о папках
+                WriteFolderInfo(folders);
+
+                Console.WriteLine();
+                Console.WriteLine();
+            }
+
         }
+
+        public static void WriteDriveInfo(DriveInfo drive)
+        {
+            Console.WriteLine($"Название: {drive.Name}");
+            Console.WriteLine($"Тие: {drive.DriveType}");
+            if (drive.IsReady)
+            {
+                Console.WriteLine($"Объем: {drive.TotalSize}");
+                Console.WriteLine($"Свободно: {drive.TotalFreeSpace}");
+                Console.WriteLine($"Метка: {drive.VolumeLabel}");
+            }
+
+        }
+
+        public static void WriteFolderInfo(DirectoryInfo[] folders)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Папки: ");
+            Console.WriteLine();
+
+            foreach (var folder in folders)
+            {
+                Console.WriteLine(folder.Name + DirectoryExtention.DirSize(folder));
+                Console.WriteLine($"Размер директории: {FormatSize(DirectoryExtention.DirSize(folder))}");
+            }
+        }
+
+        static void GetCatalogs()
+        {
+            string dirName = @"/"; // Прописываем путь к корневой директории MacOS (для Windows скорее всего тут будет "C:\\")
+            if (Directory.Exists(dirName)) // Проверим, что директория существует
+            {
+                Console.WriteLine("Папки:");
+                string[] dirs = Directory.GetDirectories(dirName);  // Получим все директории корневого каталога
+
+                foreach (string d in dirs) // Выведем их все
+                    Console.WriteLine(d);
+
+                Console.WriteLine();
+                Console.WriteLine("Файлы:");
+                string[] files = Directory.GetFiles(dirName);// Получим все файлы корневого каталога
+
+                foreach (string s in files)   // Выведем их все
+                    Console.WriteLine(s);
+            }
+        }
+
+        //Преобразование размера в более читаемый формат (например, КБ, МБ, ГБ):
+        static string FormatSize(long bytes)
+        {
+            string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+            int order = 0;
+            while (bytes >= 1024 && order < sizes.Length - 1)
+            {
+                order++;
+                bytes /= 1024;
+            }
+            return $"{bytes:0.##} {sizes[order]}";
+        }
+
     }
 }
 // Время запуска: 04.03.2025 23:06:15
