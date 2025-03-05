@@ -10,6 +10,7 @@ namespace ConsoleApp8
     {
         static void Main(string[] args)
         {
+
         }
     }
 }
